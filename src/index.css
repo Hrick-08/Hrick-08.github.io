@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  
+  body {
+    @apply bg-retro-cream text-retro-dark font-retro;
+    margin: 0;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+  }
+  
+  .dark body {
+    @apply bg-retro-dark text-retro-cream;
+  }
+  
+}
+
+@layer components {
+  /* Retro button styles */
+  .btn-retro {
+    @apply px-6 py-3 bg-retro-blue text-retro-dark font-pixel text-sm border-2 border-retro-dark shadow-retro transition-all duration-200 hover:shadow-retro-lg hover:bg-retro-yellow hover:-translate-x-1 hover:-translate-y-1 active:translate-x-0 active:translate-y-0 active:shadow-retro;
+  }
+  
+  .btn-retro-dark {
+    @apply px-6 py-3 bg-retro-dark text-retro-cream font-pixel text-sm border-2 border-retro-cream shadow-retro transition-all duration-200 hover:shadow-retro-lg hover:bg-retro-gray hover:-translate-x-1 hover:-translate-y-1 active:translate-x-0 active:translate-y-0 active:shadow-retro;
+  }
+  
+  /* Retro window styles */
+  .window-retro {
+    @apply bg-retro-beige dark:bg-retro-gray border-2 border-retro-dark shadow-retro-lg;
+  }
+  
+  .window-title-bar {
+    @apply bg-retro-blue dark:bg-retro-dark text-retro-dark dark:text-retro-cream font-pixel text-xs px-3 py-2 border-b-2 border-retro-dark flex items-center justify-between;
+  }
+  
+  /* Retro input styles */
+  .input-retro {
+    @apply bg-retro-cream dark:bg-retro-dark border-2 border-retro-dark px-3 py-2 font-retro text-lg focus:outline-none focus:border-retro-pink focus:shadow-retro;
+  }
+  
+  /* Retro card styles */
+  .card-retro {
+    @apply bg-retro-beige dark:bg-retro-gray border-2 border-retro-dark shadow-retro p-6 transition-all duration-300 hover:shadow-retro-lg hover:-translate-y-1;
+  }
+  
+  /* Pixelated effects */
+  .pixel-border {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+  
+  /* Retro cursor styles */
+  .cursor-retro {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="black"/><rect x="2" y="2" width="12" height="12" fill="white"/></svg>'), auto;
+  }
+  
+  .cursor-retro-pointer {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="black"/><rect x="2" y="2" width="12" height="12" fill="%23FFB6C1"/></svg>'), pointer;
+  }
+  
+  /* Retro text selection */
+  ::selection {
+    background-color: #87CEEB;
+    color: #2D2D2D;
+  }
+  
+  /* Retro focus styles */
+  *:focus {
+    outline: 2px solid #F0A0A0;
+    outline-offset: 2px;
+  }
+  
+  /* Retro scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 16px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #F5F5DC;
+    border: 2px solid #2D2D2D;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #D2B48C;
+    border: 2px solid #2D2D2D;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #F0A0A0;
+  }
+  
+  ::-webkit-scrollbar-corner {
+    background: #F5F5DC;
+  }
+}
+
+@layer utilities {
+  .text-shadow-retro {
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+  }
+  
+  .text-shadow-retro-lg {
+    text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+  }
+}
