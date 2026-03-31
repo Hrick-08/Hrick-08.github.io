@@ -279,7 +279,7 @@ const STYLES = `
 /* ── BOOT SCREEN ────────────────────────── */
 .boot-screen {
   position: fixed; inset: 0;
-  background: #1a1a1a;
+  background: #300a24;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   z-index: 99999;
@@ -289,30 +289,33 @@ const STYLES = `
   opacity: 0; pointer-events: none;
 }
 .boot-logo {
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  background: conic-gradient(#E95420 0deg 120deg, #77216F 120deg 240deg, #5E2750 240deg 360deg);
-  animation: ubuntuLogoSpin 2s ease-in-out infinite;
-  margin-bottom: 32px;
+  width: 96px; height: 96px;
+  margin-bottom: 48px;
+  animation: bootFadeIn 0.6s ease forwards;
+  opacity: 0;
 }
 .boot-dots {
-  display: flex; gap: 8px;
+  display: flex; gap: 10px;
 }
 .boot-dot {
-  width: 8px; height: 8px;
+  width: 10px; height: 10px;
   border-radius: 50%;
   background: #E95420;
-  animation: dotBounce 1.4s ease-in-out infinite;
+  opacity: 0.25;
+  animation: dotSequence 1.8s ease-in-out infinite;
 }
-.boot-dot:nth-child(2) { animation-delay: 0.16s; }
-.boot-dot:nth-child(3) { animation-delay: 0.32s; }
+.boot-dot:nth-child(1) { animation-delay: 0.0s; }
+.boot-dot:nth-child(2) { animation-delay: 0.2s; }
+.boot-dot:nth-child(3) { animation-delay: 0.4s; }
+.boot-dot:nth-child(4) { animation-delay: 0.6s; }
+.boot-dot:nth-child(5) { animation-delay: 0.8s; }
+@keyframes dotSequence {
+  0%, 100% { opacity: 0.2; }
+  30% { opacity: 1; }
+  60% { opacity: 0.2; }
+}
 .boot-text {
-  margin-top: 24px;
-  font-size: 13px;
-  color: #888;
-  font-weight: 300;
-  letter-spacing: 1px;
-  animation: bootPulse 2s ease-in-out infinite;
+  display: none;
 }
 
 /* ── DESKTOP ────────────────────────────── */
@@ -1258,16 +1261,17 @@ export default function App() {
       <style>{STYLES}</style>
 
       {!booted && (
-        <div className={`boot-screen ${bootFade ? 'fade-out' : ''}`}>
-          <div className="boot-logo" />
-          <div className="boot-dots">
-            <div className="boot-dot" />
-            <div className="boot-dot" />
-            <div className="boot-dot" />
-          </div>
-          <div className="boot-text">ubuntu</div>
-        </div>
-      )}
+  <div className={`boot-screen ${bootFade ? 'fade-out' : ''}`}>
+    <img src="/Ubuntu.svg" alt="Ubuntu" className="boot-logo" />
+    <div className="boot-dots">
+      <div className="boot-dot" />
+      <div className="boot-dot" />
+      <div className="boot-dot" />
+      <div className="boot-dot" />
+      <div className="boot-dot" />
+    </div>
+  </div>
+)}
 
       {booted && (
         <div
@@ -1456,7 +1460,7 @@ export default function App() {
           ['GPU',      'NVIDIA RTX 4050 (120W)'],
           ['Memory',   '16 GB RAM'],
           ['Stack',    'React · Node · FastAPI · Qdrant · AWS'],
-          ['Projects', 'R.I.S.H.I. · CFOX.ai · Shramo.ai · SplitIn'],
+          ['Projects', 'R.I.S.H.I. · CFOX.ai · Shramo.ai'],
           ['GitHub',   <a href="https://github.com/Hrick-08" target="_blank" rel="noopener noreferrer">github.com/Hrick-08</a>],
           ['Portfolio',<a href="https://hrick.me" target="_blank" rel="noopener noreferrer">hrick.me</a>],
         ].map(([key, val]) => (
