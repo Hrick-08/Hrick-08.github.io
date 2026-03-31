@@ -786,6 +786,95 @@ const STYLES = `
   background: rgba(255,255,255,0.08);
   margin: 4px 0;
 }
+
+/* ── SYSTEM INFO MODAL ──────────────────── */
+.sysinfo-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 3000;
+  display: flex; align-items: center; justify-content: center;
+  animation: activitiesOverview 0.25s ease;
+}
+.sysinfo-modal {
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.7);
+  padding: 32px 36px;
+  min-width: 540px;
+  max-width: 620px;
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 13px;
+  position: relative;
+}
+.sysinfo-close {
+  position: absolute;
+  top: 14px; right: 16px;
+  background: none; border: none;
+  color: #666; font-size: 18px;
+  cursor: pointer; line-height: 1;
+  transition: color 0.15s;
+}
+.sysinfo-close:hover { color: #ddd; }
+.sysinfo-ascii {
+  color: #E95420;
+  font-size: 11px;
+  line-height: 1.4;
+  flex-shrink: 0;
+  white-space: pre;
+  user-select: none;
+}
+.sysinfo-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.sysinfo-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #E95420;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+.sysinfo-divider {
+  border: none;
+  border-top: 1px solid rgba(233,84,32,0.3);
+  margin: 6px 0 8px;
+}
+.sysinfo-row {
+  display: flex;
+  gap: 0;
+  line-height: 1.7;
+}
+.sysinfo-key {
+  color: #E95420;
+  font-weight: 700;
+  min-width: 110px;
+  flex-shrink: 0;
+}
+.sysinfo-val {
+  color: #ccc;
+}
+.sysinfo-val a {
+  color: #569cd6;
+  text-decoration: none;
+}
+.sysinfo-val a:hover { text-decoration: underline; }
+.sysinfo-palette {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.sysinfo-swatch {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+}
 `;
 
 /* ═══════════════════════════════════════════
@@ -989,6 +1078,7 @@ export default function App() {
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [showActivities, setShowActivities] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
+  const [showSystemInfo, setShowSystemInfo] = useState(false);
   const dragRef = useRef(null);
   const resizeRef = useRef(null);
   const clickTimerRef = useRef({});
@@ -1328,11 +1418,63 @@ export default function App() {
               <div className="context-menu-item" onClick={() => { setShowActivities(true); setContextMenu(null); }}>
                 🔍 &nbsp;Activities Overview
               </div>
-              <div className="context-menu-item" onClick={() => setContextMenu(null)}>
+              <div className="context-menu-item" onClick={() => { setShowSystemInfo(true); setContextMenu(null); }}>
                 ⚙️ &nbsp;Settings
               </div>
             </div>
           )}
+          {/* ── SYSTEM INFO MODAL ── */}
+{showSystemInfo && (
+  <div className="sysinfo-overlay" onClick={() => setShowSystemInfo(false)}>
+    <div className="sysinfo-modal" onClick={e => e.stopPropagation()}>
+      <button className="sysinfo-close" onClick={() => setShowSystemInfo(false)}>✕</button>
+
+      {/* ASCII art logo */}
+      <div className="sysinfo-ascii">{`
+   ██╗  ██╗
+   ██║  ██║
+   ███████║
+   ██╔══██║
+   ██║  ██║
+   ╚═╝  ╚═╝
+  hrick.me
+      `}</div>
+
+      {/* Info rows */}
+      <div className="sysinfo-right">
+        <div className="sysinfo-title">hritabrata@portfolio</div>
+        <hr className="sysinfo-divider" />
+
+        {[
+          ['OS',       'Ubuntu 24.04 LTS (Portfolio Edition)'],
+          ['Host',     'Chitkara University — B.E. CSE AI & ML'],
+          ['Kernel',   'hrick-kernel 4.0.0-stable'],
+          ['Uptime',   'Since Aug 2024'],
+          ['Shell',    'bash — FastAPI · Next.js · Python'],
+          ['Role',     'Web Dev @ GDG On Campus'],
+          ['CPU',      'Intel i5 12th Gen'],
+          ['GPU',      'NVIDIA RTX 4050 (120W)'],
+          ['Memory',   '16 GB RAM'],
+          ['Stack',    'React · Node · FastAPI · Qdrant · AWS'],
+          ['Projects', 'R.I.S.H.I. · CFOX.ai · Shramo.ai · SplitIn'],
+          ['GitHub',   <a href="https://github.com/Hrick-08" target="_blank" rel="noopener noreferrer">github.com/Hrick-08</a>],
+          ['Portfolio',<a href="https://hrick.me" target="_blank" rel="noopener noreferrer">hrick.me</a>],
+        ].map(([key, val]) => (
+          <div className="sysinfo-row" key={key}>
+            <span className="sysinfo-key">{key}</span>
+            <span className="sysinfo-val">{val}</span>
+          </div>
+        ))}
+
+        <div className="sysinfo-palette">
+          {['#E95420','#77216F','#5E2750','#569cd6','#4ec9b0','#dcdcaa','#6a9955','#ce9178'].map(c => (
+            <div key={c} className="sysinfo-swatch" style={{ background: c }} title={c} />
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
         </div>
       )}
     </>
