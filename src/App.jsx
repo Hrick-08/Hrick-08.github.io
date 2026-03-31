@@ -190,21 +190,26 @@ TOOLS & CLOUD:
 [1] Microsoft AI Fundamentals (AZ-900 AI)
     Issuer:     Microsoft
     Verified:   Credly
+    Link:       https://www.credly.com/badges/6455ba0b-6457-48ab-b33a-7490785ca1cb/linked_in_profile
 
 [2] Microsoft Azure Fundamentals (AZ-900)
     Issuer:     Microsoft
     Verified:   Credly
+    Link:       https://www.credly.com/badges/da97194b-1180-465d-bd80-0f6759628284/linked_in_profile
 
 [3] Microsoft Azure Data Fundamentals (DP-900)
     Issuer:     Microsoft
     Verified:   Credly
+    Link:       https://www.credly.com/earner/earned/badge/eba2c1d6-3b90-492a-ad5b-7132bcbd44e6
 
 [4] Design Thinking
     Issuer:     University of Virginia
     Platform:   Coursera
+    Link:       https://www.coursera.org/account/accomplishments/specialization/TS4012GW0MI3
 
 [5] Introduction to Cyber Security
     Issuer:     (Credly verified)
+    Link:       https://www.credly.com/badges/cd3d17b0-0436-4814-9b3d-81a001e661e3/linked_in_profile
 
 # ───────────────────────────────────────────────────
 # "Never stop learning."
@@ -313,7 +318,10 @@ const STYLES = `
 /* ── DESKTOP ────────────────────────────── */
 .desktop {
   width: 100vw; height: 100vh;
-  background: radial-gradient(ellipse at 30% 20%, #2d2d2d 0%, #1a1a1a 50%, #111 100%);
+  // background: radial-gradient(ellipse at 30% 20%, #2d2d2d 0%, #1a1a1a 50%, #111 100%);
+  background-image: url('/background.webp');
+  background-size: cover;
+  background-position: center;
   position: relative; overflow: hidden;
   animation: fadeInDesktop 1s ease;
 }
@@ -560,6 +568,24 @@ const STYLES = `
 .editor-content .divider {
   color: #555;
 }
+.editor-link-view {
+  color: #4ec9b0 !important;
+  text-decoration: none !important;
+  background: rgba(78, 201, 176, 0.1);
+  border: 1px solid rgba(78, 201, 176, 0.3);
+  border-radius: 3px;
+  padding: 0px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.editor-link-view:hover {
+  background: rgba(78, 201, 176, 0.2) !important;
+  border-color: rgba(78, 201, 176, 0.6) !important;
+  color: #6ee7d4 !important;
+}
 
 /* ── EDITOR STATUS BAR ──────────────────── */
 .editor-statusbar {
@@ -589,6 +615,7 @@ const STYLES = `
   border-radius: 18px;
   border: 1px solid rgba(255,255,255,0.08);
   z-index: 900;
+  overflow: visible; /* ← ADD THIS */
   animation: slideUpDock 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
 }
 .dock-item {
@@ -597,12 +624,11 @@ const STYLES = `
   display: flex; align-items: center; justify-content: center;
   font-size: 26px;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
 }
 .dock-item:hover {
-  transform: scale(1.2) translateY(-4px);
-  background: rgba(255,255,255,0.08);
+  transform: scale(1.2) translateY(-6px);
 }
 .dock-item:active {
   transform: scale(1.05) translateY(-2px);
@@ -766,23 +792,131 @@ const STYLES = `
    HELPER: Parse .txt content into styled spans
    ═══════════════════════════════════════════ */
 function parseTextContent(text) {
-  return text.split('\n').map((line, i) => {
-    let className = '';
-    if (/^#/.test(line)) className = 'comment';
-    else if (/^─+$/.test(line.trim()) || /^═+$/.test(line.trim())) className = 'divider';
-    else if (/^\[/.test(line.trim())) className = 'bracket';
-    else if (/^[A-Z][A-Z &/]+:/.test(line.trim())) className = 'header-line';
-    else if (/^\s*•/.test(line)) className = 'bullet-line';
-    else if (/^\s{4}\w+:/.test(line)) {
+  const lines = text.split('\n');
+  let currentContext = '';
+
+  const linkify = (textStr, defaultClass) => {
+    const tokens = textStr.split(/(\s+)/);
+    return tokens.map((token, idx) => {
+      if (!token.trim()) {
+        return <span key={idx}>{token}</span>;
+      }
+
+      let href = null;
+      if (token.includes('@') && !token.startsWith('@')) {
+        href = `mailto:${token}`;
+      } else if (/^\+?[0-9-]{10,20}$/.test(token)) {
+        href = `tel:${token}`;
+      } else if (/\.(com|me|net|io|org|co|ai)(\/[\w.-]*)*\/?$/.test(token) || token.startsWith('http://') || token.startsWith('https://')) {
+        href = token.startsWith('http') ? token : `https://${token}`;
+      }
+
+      if (href) {
+        return (
+          <a
+            key={idx}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="editor-link"
+            onClick={(e) => e.stopPropagation()}
+            style={{ color: '#569cd6', textDecoration: 'underline', cursor: 'pointer' }}
+          >
+            {token}
+          </a>
+        );
+      }
+      return <span key={idx} className={defaultClass || undefined}>{token}</span>;
+    });
+  };
+
+  // Special renderer for Link: lines — shows "View" badge instead of raw URL
+  const renderLinkLine = (line) => {
+    const colonIdx = line.indexOf(':');
+    // label is everything up to and including first colon, e.g. "    Link:"
+    const label = line.slice(0, colonIdx + 1);
+    const rest = line.slice(colonIdx + 1).trim();
+
+    // rest should be the URL
+    const href = rest.startsWith('http') ? rest : `https://${rest}`;
+
+    return (
+      <>
+        <span className="label">{label}</span>
+        <span>{'       '}</span>
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="editor-link-view"
+          onClick={(e) => e.stopPropagation()}
+        >
+          View ↗
+        </a>
+      </>
+    );
+  };
+
+  return lines.map((line, i) => {
+    const trimmed = line.trim();
+    if (trimmed === '') {
+      currentContext = '';
+      return <div key={i} className="editor-empty-line">{'\u00A0'}</div>;
+    }
+
+    if (/^#/.test(line)) {
+      currentContext = 'comment';
+      return <div key={i}>{linkify(line, 'comment')}</div>;
+    }
+
+    if (/^─+$/.test(trimmed) || /^═+$/.test(trimmed)) {
+      currentContext = '';
+      return <div key={i} className="divider">{line}</div>;
+    }
+
+    if (/^\[/.test(trimmed)) {
+      currentContext = '';
+      return <div key={i}>{linkify(line, 'bracket')}</div>;
+    }
+
+    if (/^[A-Z][A-Z &/]+:$/.test(trimmed)) {
+      currentContext = 'value';
+      return <div key={i} className="header-line">{line}</div>;
+    }
+
+    if (/^\s*•/.test(line)) {
+      currentContext = 'bullet-line';
+      return <div key={i}>{linkify(line, 'bullet-line')}</div>;
+    }
+
+    // ── Special case: Link: label with a URL value ──
+    if (/^\s*Link:/.test(line)) {
+      currentContext = 'value';
+      return <div key={i}>{renderLinkLine(line)}</div>;
+    }
+
+    if (/^\s*[A-Z][a-zA-Z0-9_ ]*?:/.test(line) && !line.includes('http')) {
       const colonIdx = line.indexOf(':');
+      const label = line.slice(0, colonIdx + 1);
+      const val = line.slice(colonIdx + 1);
+      currentContext = 'value';
       return (
         <div key={i}>
-          <span className="label">{line.slice(0, colonIdx + 1)}</span>
-          <span className="value">{line.slice(colonIdx + 1)}</span>
+          <span className="label">{label}</span>
+          {linkify(val, 'value')}
         </div>
       );
     }
-    return <div key={i} className={className}>{line || '\u00A0'}</div>;
+
+    if (currentContext === 'bullet-line') {
+      return <div key={i}>{linkify(line, 'bullet-line')}</div>;
+    } else if (currentContext === 'value') {
+      return <div key={i}>{linkify(line, 'value')}</div>;
+    } else if (currentContext === 'comment') {
+      return <div key={i}>{linkify(line, 'comment')}</div>;
+    } else {
+      return <div key={i}>{linkify(line, '')}</div>;
+    }
   });
 }
 
@@ -849,8 +983,8 @@ export default function App() {
   const [booted, setBooted] = useState(false);
   const [bootFade, setBootFade] = useState(false);
   const [time, setTime] = useState('');
-  const [openWindows, setOpenWindows] = useState({}); // { fileId: { x, y, w, h, minimized, maximized } }
-  const [windowOrder, setWindowOrder] = useState([]); // z-index ordering
+  const [openWindows, setOpenWindows] = useState({});
+  const [windowOrder, setWindowOrder] = useState([]);
   const [activeWindowId, setActiveWindowId] = useState(null);
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [showActivities, setShowActivities] = useState(false);
@@ -860,14 +994,12 @@ export default function App() {
   const clickTimerRef = useRef({});
   const windowCounterRef = useRef(0);
 
-  // ── Boot sequence ──
   useEffect(() => {
     const t1 = setTimeout(() => setBootFade(true), 2200);
     const t2 = setTimeout(() => setBooted(true), 3000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  // ── Live clock ──
   useEffect(() => {
     const update = () => {
       const now = new Date();
@@ -879,18 +1011,15 @@ export default function App() {
     return () => clearInterval(iv);
   }, []);
 
-  // ── Close context menu on click ──
   useEffect(() => {
     const handler = () => setContextMenu(null);
     window.addEventListener('click', handler);
     return () => window.removeEventListener('click', handler);
   }, []);
 
-  // ── Open a file window ──
   const openFile = useCallback((fileId) => {
     setOpenWindows(prev => {
       if (prev[fileId]) {
-        // If minimized, restore
         if (prev[fileId].minimized) {
           return { ...prev, [fileId]: { ...prev[fileId], minimized: false } };
         }
@@ -918,9 +1047,7 @@ export default function App() {
     setShowActivities(false);
   }, []);
 
-  // ── Close window ──
   const closeWindow = useCallback((fileId) => {
-    // Add closing animation
     const el = document.getElementById(`window-${fileId}`);
     if (el) {
       el.classList.add('closing');
@@ -943,7 +1070,6 @@ export default function App() {
     }
   }, []);
 
-  // ── Minimize window ──
   const minimizeWindow = useCallback((fileId) => {
     setOpenWindows(prev => ({
       ...prev,
@@ -952,7 +1078,6 @@ export default function App() {
     setActiveWindowId(prev => prev === fileId ? null : prev);
   }, []);
 
-  // ── Maximize/restore window ──
   const maximizeWindow = useCallback((fileId) => {
     setOpenWindows(prev => ({
       ...prev,
@@ -960,7 +1085,6 @@ export default function App() {
     }));
   }, []);
 
-  // ── Focus window ──
   const focusWindow = useCallback((fileId) => {
     setWindowOrder(prev => {
       const filtered = prev.filter(id => id !== fileId);
@@ -969,12 +1093,10 @@ export default function App() {
     setActiveWindowId(fileId);
   }, []);
 
-  // ── Double-click handling for desktop icons ──
   const handleIconClick = useCallback((fileId) => {
     const now = Date.now();
     const last = clickTimerRef.current[fileId] || 0;
     if (now - last < 400) {
-      // Double-click!
       openFile(fileId);
       setSelectedIcon(null);
       clickTimerRef.current[fileId] = 0;
@@ -984,7 +1106,6 @@ export default function App() {
     }
   }, [openFile]);
 
-  // ── Drag handling ──
   const handleDragStart = useCallback((fileId) => (e) => {
     e.preventDefault();
     const win = openWindows[fileId];
@@ -1008,7 +1129,6 @@ export default function App() {
     window.addEventListener('mouseup', onUp);
   }, [openWindows]);
 
-  // ── Resize handling ──
   const handleResizeStart = useCallback((fileId) => (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1035,24 +1155,18 @@ export default function App() {
     window.addEventListener('mouseup', onUp);
   }, [openWindows]);
 
-  // ── Right-click context menu on desktop ──
   const handleDesktopContext = useCallback((e) => {
     e.preventDefault();
     setContextMenu({ x: e.clientX, y: e.clientY });
   }, []);
 
-  // ── Minimized windows for taskbar ──
   const minimizedWindows = Object.entries(openWindows).filter(([, ws]) => ws.minimized);
-
-  // ── Visible windows ──
   const visibleWindows = Object.entries(openWindows).filter(([, ws]) => !ws.minimized);
 
-  // ════════════════ RENDER ════════════════
   return (
     <>
       <style>{STYLES}</style>
 
-      {/* ── BOOT SCREEN ── */}
       {!booted && (
         <div className={`boot-screen ${bootFade ? 'fade-out' : ''}`}>
           <div className="boot-logo" />
@@ -1065,7 +1179,6 @@ export default function App() {
         </div>
       )}
 
-      {/* ── DESKTOP ── */}
       {booted && (
         <div
           className="desktop"
@@ -1075,7 +1188,6 @@ export default function App() {
           <div className="desktop-noise" />
           <div className="desktop-gradient-accent" />
 
-          {/* ── TOP BAR ── */}
           <div className="topbar">
             <div className="topbar-left">
               <div className="activities-btn" onClick={(e) => { e.stopPropagation(); setShowActivities(v => !v); }}>
@@ -1096,7 +1208,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* ── DESKTOP ICONS ── */}
           <div className="desktop-icons" onClick={(e) => e.stopPropagation()}>
             {FILES.map((file, idx) => (
               <div
@@ -1112,7 +1223,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* ── EDITOR WINDOWS ── */}
           {visibleWindows.map(([fileId, ws]) => {
             const file = FILES.find(f => f.id === fileId);
             if (!file) return null;
@@ -1134,9 +1244,7 @@ export default function App() {
             );
           })}
 
-          {/* ── DOCK ── */}
           <div className="dock" onClick={(e) => e.stopPropagation()}>
-            {/* File icons in dock */}
             {FILES.map(file => {
               const isOpen = !!openWindows[file.id] && !openWindows[file.id]?.minimized;
               return (
@@ -1162,7 +1270,6 @@ export default function App() {
               );
             })}
 
-            {/* Minimized windows chips (after separator) */}
             {minimizedWindows.length > 0 && <div className="dock-separator" />}
             {minimizedWindows.map(([fileId]) => {
               const file = FILES.find(f => f.id === fileId);
@@ -1179,7 +1286,6 @@ export default function App() {
             })}
           </div>
 
-          {/* ── ACTIVITIES OVERLAY ── */}
           {showActivities && (
             <div className="activities-overlay" onClick={() => setShowActivities(false)}>
               <div className="activities-title">Activities</div>
@@ -1199,7 +1305,6 @@ export default function App() {
             </div>
           )}
 
-          {/* ── CONTEXT MENU ── */}
           {contextMenu && (
             <div
               className="context-menu"
