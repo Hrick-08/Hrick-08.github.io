@@ -28,7 +28,7 @@ export const projects: Project[] = [
       "EC2",
       "Python",
     ],
-    github: "https://github.com/Hrick-08",
+    github: "https://github.com/hrick-08/R.I.S.H.I.",
     featured: true,
     highlights: [
       "Multi-provider LLM routing",
@@ -54,7 +54,7 @@ export const projects: Project[] = [
       "RAG"
       // "Cloudinary",
     ],
-    github: "https://github.com/Hrick-08",
+    github: "https://github.com/hrick-08/Closetly.io",
     liveUrl: "https://closetly.hrick.in",
     featured: true,
     highlights: [
