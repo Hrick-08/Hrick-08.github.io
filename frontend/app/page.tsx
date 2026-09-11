@@ -6,6 +6,7 @@ import { LiveActivity } from "@/components/activity/live-activity";
 import { Experience } from "@/components/experience/experience";
 import { Stack } from "@/components/stack/stack";
 import { Now } from "@/components/now/now";
+import { BlogPreview } from "@/components/blog/blog-preview";
 import { Contact } from "@/components/contact/contact";
 import { Footer } from "@/components/layout/footer";
 
@@ -33,6 +34,9 @@ export default function Home() {
 
         <div className="editorial-divider max-w-[1440px] mx-auto section-padding" />
         <Now />
+
+        <div className="editorial-divider max-w-[1440px] mx-auto section-padding" />
+        <BlogPreview />
 
         <div className="editorial-divider max-w-[1440px] mx-auto section-padding" />
         <Contact />

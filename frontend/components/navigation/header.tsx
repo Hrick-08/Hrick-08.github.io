@@ -1,19 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { navigation, siteConfig } from "@/data/site";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  const getNavigationHref = (href: string) =>
+    href.startsWith("#") && pathname !== "/" ? `/${href}` : href;
+  const homeHref = pathname === "/" ? "#" : "/#writing";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
       <nav className="section-padding flex items-center justify-between h-14 md:h-16 max-w-[1440px] mx-auto">
         {/* Logo */}
         <a
-          href="#"
+          href={homeHref}
           className="font-editorial text-xl md:text-2xl italic text-foreground hover:text-accent transition-colors"
         >
           {siteConfig.name}
@@ -24,7 +30,7 @@ export function Header() {
           {navigation.map((item) => (
             <a
               key={item.href}
-              href={item.href}
+              href={getNavigationHref(item.href)}
               className="group flex items-baseline gap-1.5 text-sm text-muted hover:text-foreground transition-colors duration-200"
             >
               <span className="font-technical text-[10px] text-muted/60 group-hover:text-accent transition-colors">
@@ -82,7 +88,7 @@ export function Header() {
               {navigation.map((item) => (
                 <a
                   key={item.href}
-                  href={item.href}
+                  href={getNavigationHref(item.href)}
                   onClick={() => setMobileOpen(false)}
                   className="flex items-baseline gap-3 text-lg text-foreground"
                 >

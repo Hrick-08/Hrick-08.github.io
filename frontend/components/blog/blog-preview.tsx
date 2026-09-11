@@ -17,9 +17,9 @@ export function BlogPreview() {
   if (posts.length === 0) return null;
 
   return (
-    <section className="section-padding section-gap max-w-[1440px] mx-auto">
+    <section id="writing" className="section-padding section-gap max-w-[1440px] mx-auto">
       <AnimatedSection>
-        <SectionHeader title="Writing" />
+        <SectionHeader number="04" title="Writing" />
       </AnimatedSection>
 
       <div>
@@ -54,10 +54,10 @@ export function BlogPreview() {
       <AnimatedSection delay={0.3}>
         <div className="mt-6">
           <Link
-            href="/blog"
+            href="/blogs"
             className="group inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
           >
-            <span>All posts</span>
+            <span>Explore blogs</span>
             <span className="group-hover:translate-x-1 transition-transform duration-200">
               →
             </span>

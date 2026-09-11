@@ -54,7 +54,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           {/* Back link */}
           <AnimatedSection>
             <Link
-              href="/blog"
+              href="/blogs"
               className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors mb-12 md:mb-16"
             >
               <span>←</span>
@@ -115,7 +115,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           <AnimatedSection delay={0.1}>
             <div className="mt-16 md:mt-24 pt-8 border-t border-border mb-16 md:mb-24">
               <Link
-                href="/blog"
+                href="/blogs"
                 className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
               >
                 <span>←</span>

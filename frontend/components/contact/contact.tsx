@@ -7,7 +7,7 @@ export function Contact() {
       <AnimatedSection>
         <div className="max-w-2xl">
           <p className="text-xs uppercase tracking-[0.2em] text-muted mb-8 md:mb-12">
-            <span className="font-technical text-xs mr-2">04</span>
+            <span className="font-technical text-xs mr-2">05</span>
             Contact
           </p>
 

@@ -22,6 +22,13 @@ export default function BlogPage() {
         <div className="section-padding max-w-[1440px] mx-auto">
           <AnimatedSection>
             <div className="mb-16 md:mb-20">
+              <Link
+                href="/#writing"
+                className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors mb-10"
+              >
+                <span>←</span>
+                <span>Back to homepage</span>
+              </Link>
               <h1 className="font-editorial text-5xl md:text-6xl lg:text-7xl italic leading-tight mb-4">
                 Blog
               </h1>
@@ -44,7 +51,7 @@ export default function BlogPage() {
             <div>
               {posts.map((post, index) => (
                 <AnimatedSection key={post.slug} delay={index * 0.08}>
-                  <Link href={`/blog/${post.slug}`} className="group block">
+                  <Link href={`/blogs/${post.slug}`} className="group block">
                     <article className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 py-8 md:py-10 border-t border-border">
                       {/* Date + Reading Time */}
                       <div className="md:col-span-3">
