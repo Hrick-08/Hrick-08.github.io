@@ -23,8 +23,8 @@ export default function Home() {
         <div className="editorial-divider max-w-[1440px] mx-auto section-padding" />
         <Projects />
 
-        <div className="editorial-divider max-w-[1440px] mx-auto section-padding" />
-        <LiveActivity />
+        {/* <div className="editorial-divider max-w-[1440px] mx-auto section-padding" /> */}
+        {/* <LiveActivity /> */}
 
         <div className="editorial-divider max-w-[1440px] mx-auto section-padding" />
         <Experience />

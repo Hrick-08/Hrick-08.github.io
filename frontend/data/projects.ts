@@ -46,12 +46,13 @@ export const projects: Project[] = [
       "A full-stack fashion intelligence platform combining computer vision, visual search, outfit generation, product matching, and a RAG fashion agent.",
     technologies: [
       "React",
-      "Tailwind",
+      // "Tailwind",
       "Node/Express",
       "FastAPI",
       "MongoDB",
       "Qdrant",
-      "Cloudinary",
+      "RAG"
+      // "Cloudinary",
     ],
     github: "https://github.com/Hrick-08",
     liveUrl: "https://closetly.hrick.in",

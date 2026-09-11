@@ -36,7 +36,7 @@ export const education = {
   specialization: "AI & ML Specialization",
   university: "Chitkara University, Rajpura, Punjab",
   cgpa: "9.49 / 10",
-  graduation: "May 2028",
+  graduation: "August 2028",
 };
 
 export const stackCategories = [
