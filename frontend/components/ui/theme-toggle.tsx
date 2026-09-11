@@ -18,6 +18,7 @@ export function ThemeToggle() {
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       className="w-8 h-8 flex items-center justify-center rounded-md text-muted hover:text-foreground transition-colors duration-200"
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
     >
       {theme === "dark" ? (
         <svg
