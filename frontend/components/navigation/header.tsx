@@ -12,6 +12,18 @@ export function Header() {
 
   const getNavigationHref = (href: string) =>
     href.startsWith("#") && pathname !== "/" ? `/${href}` : href;
+  const handleMobileNavigation = (href: string) => {
+    setMobileOpen(false);
+
+    if (!href.startsWith("#") || pathname !== "/") return;
+
+    window.setTimeout(() => {
+      document.querySelector(href)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 300);
+  };
   const homeHref = pathname === "/" ? "#" : "/#writing";
 
   return (
@@ -89,7 +101,12 @@ export function Header() {
                 <a
                   key={item.href}
                   href={getNavigationHref(item.href)}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={(event) => {
+                    if (item.href.startsWith("#") && pathname === "/") {
+                      event.preventDefault();
+                    }
+                    handleMobileNavigation(item.href);
+                  }}
                   className="flex items-baseline gap-3 text-lg text-foreground"
                 >
                   <span className="font-technical text-xs text-muted">
