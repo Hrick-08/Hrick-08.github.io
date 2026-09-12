@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from app.db.database import init_db
+from app.db.database import dispose_db, init_db
 from app.config import settings
 
 from app.api.webhooks import router as webhooks_router
@@ -19,8 +19,18 @@ async def lifespan(app: FastAPI):
         await init_db()
         logger.info("Database initialized successfully")
     except Exception as e:
-        logger.warning(f"Database not available — running without persistence: {e}")
-    yield
+        logger.warning(
+            "Database initialization failed; persistence may be unavailable (%s)",
+            type(e).__name__,
+        )
+    try:
+        yield
+    finally:
+        try:
+            await dispose_db()
+            logger.info("Database connections disposed")
+        except Exception as e:
+            logger.warning("Database shutdown cleanup failed (%s)", type(e).__name__)
 
 app = FastAPI(title="Hrick Portfolio API", lifespan=lifespan)
 
