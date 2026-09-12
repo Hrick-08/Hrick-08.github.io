@@ -5,8 +5,8 @@ import { siteConfig } from "@/data/site";
 
 export function Hero() {
   return (
-    <section className="section-padding min-h-[90vh] md:min-h-screen flex flex-col justify-center pt-20 md:pt-0 max-w-[1440px] mx-auto">
-      <div className="max-w-4xl">
+    <section className="section-padding relative isolate min-h-[90vh] md:min-h-screen flex flex-col justify-center overflow-hidden pt-20 md:pt-0 max-w-[1440px] mx-auto">
+      <div className="relative z-10 max-w-4xl">
         {/* Name */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -77,6 +77,19 @@ export function Hero() {
             </span>
           </a>
         </motion.div>
+      </div>
+
+      <div className="relative z-0 mt-14 flex justify-center md:absolute md:inset-y-0 md:right-[4%] md:mt-0 md:w-[min(38vw,34rem)] md:items-center md:justify-end">
+        <video
+          className="hero-orb w-[min(72vw,20rem)] md:w-full"
+          src="/orb.webm"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+        />
       </div>
     </section>
   );
