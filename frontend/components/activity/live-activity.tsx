@@ -164,7 +164,9 @@ function ContributionHeatmap({ weeks }: { weeks: ContributionWeek[] }) {
 }
 
 export function LiveActivity() {
+  const pageSize = 4;
   const [activities, setActivities] = useState<ActivityEvent[]>([]);
+  const [activityPage, setActivityPage] = useState(0);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [contributionWeeks, setContributionWeeks] = useState<ContributionWeek[]>([]);
@@ -177,7 +179,7 @@ export function LiveActivity() {
   useEffect(() => {
     async function fetchActivities() {
       try {
-        const res = await fetch("/api/activity?limit=10", { cache: "no-store" });
+        const res = await fetch("/api/activity?limit=20", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           setActivities(data.items || []);
@@ -190,6 +192,13 @@ export function LiveActivity() {
     }
     fetchActivities();
   }, []);
+
+  const visibleActivities = activities.slice(
+    activityPage * pageSize,
+    (activityPage + 1) * pageSize,
+  );
+  const hasPreviousPage = activityPage > 0;
+  const hasNextPage = (activityPage + 1) * pageSize < activities.length;
 
   useEffect(() => {
     async function fetchContributions() {
@@ -271,11 +280,11 @@ export function LiveActivity() {
   return (
     <section className="section-padding section-gap max-w-[1440px] mx-auto">
       <AnimatedSection>
-        <div className="flex items-center justify-between mb-8 md:mb-12">
+        <div className="flex flex-nowrap items-baseline gap-3 mb-8 md:mb-12">
           <SectionHeader title="Recent Activity" className="mb-0" />
           {connected && (
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 live-dot" />
+            <div className="flex shrink-0 items-baseline gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 live-dot" />
               <span className="font-technical text-[10px] text-muted/60 uppercase tracking-widest">
                 Live
               </span>
@@ -304,10 +313,28 @@ export function LiveActivity() {
         ) : (
           <div>
             <AnimatePresence mode="popLayout">
-              {activities.map((event) => (
+              {visibleActivities.map((event) => (
                 <ActivityItem key={`${event.commit_sha}-${event.timestamp}`} event={event} />
               ))}
             </AnimatePresence>
+            <div className="flex justify-between border-t border-border pt-4">
+              <button
+                type="button"
+                onClick={() => setActivityPage((page) => page - 1)}
+                disabled={!hasPreviousPage}
+                className="font-technical text-[10px] uppercase tracking-widest text-muted transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                onClick={() => setActivityPage((page) => page + 1)}
+                disabled={!hasNextPage}
+                className="font-technical text-[10px] uppercase tracking-widest text-muted transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </AnimatedSection>
