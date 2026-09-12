@@ -86,7 +86,7 @@ export function LiveActivity() {
   useEffect(() => {
     async function fetchActivities() {
       try {
-        const res = await fetch(`${siteConfig.apiUrl}/api/activity?limit=10`);
+        const res = await fetch("/api/activity?limit=10", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           setActivities(data.items || []);
