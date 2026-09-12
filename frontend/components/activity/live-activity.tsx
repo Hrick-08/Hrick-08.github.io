@@ -28,6 +28,11 @@ interface ContributionWeek {
   contributionDays: ContributionDay[];
 }
 
+interface ActivityPage {
+  items: ActivityEvent[];
+  hasMore: boolean;
+}
+
 const contributionColors = [
   "bg-orange-950/20",
   "bg-orange-300",
@@ -167,6 +172,7 @@ export function LiveActivity() {
   const pageSize = 4;
   const [activities, setActivities] = useState<ActivityEvent[]>([]);
   const [activityPage, setActivityPage] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [contributionWeeks, setContributionWeeks] = useState<ContributionWeek[]>([]);
@@ -174,31 +180,52 @@ export function LiveActivity() {
   const reconnectRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const shouldReconnectRef = useRef(true);
   const connectWebSocketRef = useRef<() => void>(() => undefined);
+  const activityPageRef = useRef(0);
+  const activityPagesRef = useRef(new Map<number, ActivityPage>());
 
-  // Fetch initial activities
   useEffect(() => {
+    activityPageRef.current = activityPage;
+
     async function fetchActivities() {
+      const offset = activityPage * pageSize;
+      const cachedPage = activityPagesRef.current.get(offset);
+      if (cachedPage) {
+        setActivities(cachedPage.items);
+        setHasNextPage(cachedPage.hasMore);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
       try {
-        const res = await fetch("/api/activity?limit=20", { cache: "no-store" });
+        const res = await fetch(`/api/activity?limit=${pageSize}&offset=${offset}`, {
+          cache: "no-store",
+        });
         if (res.ok) {
           const data = await res.json();
-          setActivities(data.items || []);
+          const page = {
+            items: data.items || [],
+            hasMore: Boolean(data.has_more),
+          };
+          activityPagesRef.current.set(offset, page);
+          setActivities(page.items);
+          setHasNextPage(page.hasMore);
+        } else {
+          setActivities([]);
+          setHasNextPage(false);
         }
       } catch {
         // API not available — graceful degradation
+        setActivities([]);
+        setHasNextPage(false);
       } finally {
         setLoading(false);
       }
     }
     fetchActivities();
-  }, []);
+  }, [activityPage]);
 
-  const visibleActivities = activities.slice(
-    activityPage * pageSize,
-    (activityPage + 1) * pageSize,
-  );
   const hasPreviousPage = activityPage > 0;
-  const hasNextPage = (activityPage + 1) * pageSize < activities.length;
 
   useEffect(() => {
     async function fetchContributions() {
@@ -239,13 +266,23 @@ export function LiveActivity() {
         try {
           const payload = JSON.parse(event.data);
           const data = payload.data || payload;
+          if (activityPageRef.current !== 0) return;
           setActivities((prev) => {
             // Deduplicate by sha
             if (data.commit_sha && prev.some((a) => a.commit_sha === data.commit_sha)) {
               return prev;
             }
-            return [data, ...prev].slice(0, 20);
+            const updated = [data, ...prev].slice(0, pageSize);
+            const firstPage = activityPagesRef.current.get(0);
+            if (firstPage) {
+              activityPagesRef.current.set(0, {
+                items: updated,
+                hasMore: true,
+              });
+            }
+            return updated;
           });
+          setHasNextPage(true);
         } catch {
           // Invalid message — ignore
         }
@@ -313,7 +350,7 @@ export function LiveActivity() {
         ) : (
           <div>
             <AnimatePresence mode="popLayout">
-              {visibleActivities.map((event) => (
+              {activities.map((event) => (
                 <ActivityItem key={`${event.commit_sha}-${event.timestamp}`} event={event} />
               ))}
             </AnimatePresence>

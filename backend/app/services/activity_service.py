@@ -22,7 +22,13 @@ class ActivityService:
             return None
 
     async def get_activities(
-        self, session: AsyncSession, limit: int = 20, repository: str | None = None, branch: str | None = None, since: datetime | None = None
+        self,
+        session: AsyncSession,
+        limit: int = 20,
+        repository: str | None = None,
+        branch: str | None = None,
+        since: datetime | None = None,
+        offset: int = 0,
     ) -> list[Activity]:
         stmt = select(Activity).order_by(desc(Activity.timestamp))
         if repository:
@@ -31,7 +37,7 @@ class ActivityService:
             stmt = stmt.where(Activity.branch == branch)
         if since:
             stmt = stmt.where(Activity.timestamp >= since)
-        stmt = stmt.limit(limit)
+        stmt = stmt.offset(offset).limit(limit)
         
         result = await session.execute(stmt)
         return list(result.scalars().all())

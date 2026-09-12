@@ -20,6 +20,7 @@ class ActivityItem(BaseModel):
 
 class ActivityListResponse(BaseModel):
     items: list[ActivityItem]
+    has_more: bool = False
 
 class WebSocketEvent(BaseModel):
     event: str

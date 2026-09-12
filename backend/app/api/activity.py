@@ -10,14 +10,20 @@ router = APIRouter(prefix="/api/activity", tags=["activity"])
 
 @router.get("", response_model=ActivityListResponse)
 async def get_activities(
-    limit: int = Query(20, ge=1, le=100),
+    limit: int = Query(4, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     repository: str | None = None,
     branch: str | None = None,
     since: datetime | None = None,
     session: AsyncSession = Depends(get_session)
 ):
-    activities = await activity_service.get_activities(session, limit, repository, branch, since)
-    return ActivityListResponse(items=[ActivityItem.model_validate(a) for a in activities])
+    activities = await activity_service.get_activities(
+        session, limit + 1, repository, branch, since, offset
+    )
+    return ActivityListResponse(
+        items=[ActivityItem.model_validate(a) for a in activities[:limit]],
+        has_more=len(activities) > limit,
+    )
 
 @router.get("/latest", response_model=ActivityItem)
 async def get_latest_activity(session: AsyncSession = Depends(get_session)):
