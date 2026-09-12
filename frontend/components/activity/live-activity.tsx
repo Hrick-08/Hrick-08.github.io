@@ -94,6 +94,19 @@ function ActivityItem({ event }: { event: ActivityEvent }) {
 function ContributionHeatmap({ weeks }: { weeks: ContributionWeek[] }) {
   const days = weeks.flatMap((week) => week.contributionDays);
   const maxContributions = Math.max(...days.map((day) => day.contributionCount), 1);
+  const heatmapScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    if (!mediaQuery.matches || !heatmapScrollRef.current) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const scroller = heatmapScrollRef.current;
+      if (scroller) scroller.scrollLeft = scroller.scrollWidth;
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [weeks]);
 
   return (
     <div className="border-t border-border pt-5">
@@ -110,7 +123,12 @@ function ContributionHeatmap({ weeks }: { weeks: ContributionWeek[] }) {
           @Hrick-08
         </a>
       </div>
-      <div className="overflow-x-auto pb-2" role="img" aria-label="GitHub contribution activity over the past year">
+      <div
+        ref={heatmapScrollRef}
+        className="overflow-x-auto pb-2"
+        role="img"
+        aria-label="GitHub contribution activity over the past year"
+      >
         <div className="flex gap-1 min-w-max">
           {weeks.map((week, weekIndex) => (
             <div key={`week-${weekIndex}`} className="flex flex-col gap-1">
