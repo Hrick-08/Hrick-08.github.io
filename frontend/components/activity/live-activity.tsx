@@ -165,7 +165,7 @@ export function LiveActivity() {
   return (
     <section className="section-padding section-gap max-w-[1440px] mx-auto">
       <AnimatedSection>
-        <div className="flex items-center justify-between mb-12 md:mb-16">
+        <div className="flex items-center justify-between mb-8 md:mb-12">
           <SectionHeader title="Recent Activity" className="mb-0" />
           {connected && (
             <div className="flex items-center gap-2">

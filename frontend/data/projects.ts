@@ -41,7 +41,7 @@ export const projects: Project[] = [
   {
     title: "Closetly",
     slug: "closetly",
-    year: "2025",
+    year: "2026",
     description:
       "A full-stack fashion intelligence platform combining computer vision, visual search, outfit generation, product matching, and a RAG fashion agent.",
     technologies: [
@@ -68,7 +68,7 @@ export const projects: Project[] = [
   {
     title: "Exposr",
     slug: "exposr",
-    year: "2025",
+    year: "2026",
     description:
       "A reverse TCP/UDP tunneling CLI that exposes local services publicly through a persistent relay agent. Published on PyPI.",
     technologies: ["Python", "asyncio", "TCP/UDP", "Azure"],
