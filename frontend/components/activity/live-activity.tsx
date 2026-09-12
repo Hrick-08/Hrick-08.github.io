@@ -7,13 +7,13 @@ import { AnimatedSection } from "@/components/ui/animated-section";
 import { siteConfig } from "@/data/site";
 
 interface ActivityEvent {
-  type: string;
+  event_type: string;
   repository: string;
   repository_url?: string;
-  branch: string;
-  sha: string;
-  message: string;
-  author: string;
+  branch: string | null;
+  commit_sha: string | null;
+  commit_message: string | null;
+  author: string | null;
   timestamp: string;
   url?: string;
 }
@@ -30,7 +30,7 @@ function formatDate(dateStr: string): string {
 }
 
 function ActivityItem({ event }: { event: ActivityEvent }) {
-  const shortSha = event.sha?.slice(0, 7) || "";
+  const shortSha = event.commit_sha?.slice(0, 7) || "";
 
   return (
     <motion.div
@@ -49,7 +49,7 @@ function ActivityItem({ event }: { event: ActivityEvent }) {
             {event.repository}
           </p>
           <p className="text-sm text-muted leading-relaxed line-clamp-2">
-            {event.message}
+            {event.commit_message || `${event.event_type} event`}
           </p>
         </div>
         {event.url ? (
@@ -79,6 +79,8 @@ export function LiveActivity() {
   const [loading, setLoading] = useState(true);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const shouldReconnectRef = useRef(true);
+  const connectWebSocketRef = useRef<() => void>(() => undefined);
 
   // Fetch initial activities
   useEffect(() => {
@@ -100,6 +102,8 @@ export function LiveActivity() {
 
   // WebSocket connection with reconnect
   const connectWebSocket = useCallback(() => {
+    if (!shouldReconnectRef.current) return;
+
     const wsProtocol = siteConfig.apiUrl.startsWith("https") ? "wss" : "ws";
     const wsHost = siteConfig.apiUrl.replace(/^https?:\/\//, "");
     const wsUrl = `${wsProtocol}://${wsHost}/ws/activity`;
@@ -111,15 +115,20 @@ export function LiveActivity() {
       ws.onopen = () => setConnected(true);
       ws.onclose = () => {
         setConnected(false);
-        reconnectRef.current = setTimeout(connectWebSocket, 5000);
+        if (shouldReconnectRef.current) {
+          reconnectRef.current = setTimeout(() => connectWebSocketRef.current(), 5000);
+        }
       };
-      ws.onerror = () => ws.close();
+      ws.onerror = () => undefined;
       ws.onmessage = (event) => {
         try {
-          const data = JSON.parse(event.data);
+          const payload = JSON.parse(event.data);
+          const data = payload.data || payload;
           setActivities((prev) => {
             // Deduplicate by sha
-            if (prev.some((a) => a.sha === data.sha)) return prev;
+            if (data.commit_sha && prev.some((a) => a.commit_sha === data.commit_sha)) {
+              return prev;
+            }
             return [data, ...prev].slice(0, 20);
           });
         } catch {
@@ -127,15 +136,29 @@ export function LiveActivity() {
         }
       };
     } catch {
-      reconnectRef.current = setTimeout(connectWebSocket, 5000);
+      reconnectRef.current = setTimeout(() => connectWebSocketRef.current(), 5000);
     }
   }, []);
 
   useEffect(() => {
+    shouldReconnectRef.current = true;
+    connectWebSocketRef.current = connectWebSocket;
     connectWebSocket();
     return () => {
-      wsRef.current?.close();
+      shouldReconnectRef.current = false;
       if (reconnectRef.current) clearTimeout(reconnectRef.current);
+
+      const ws = wsRef.current;
+      wsRef.current = null;
+      if (!ws) return;
+
+      if (ws.readyState === WebSocket.CONNECTING) {
+        ws.onopen = () => ws.close();
+        ws.onclose = null;
+        ws.onerror = null;
+      } else {
+        ws.close();
+      }
     };
   }, [connectWebSocket]);
 
@@ -163,8 +186,8 @@ export function LiveActivity() {
         ) : activities.length === 0 ? (
           <div className="py-12 border-t border-border">
             <p className="text-sm text-muted text-center">
-              No activity yet. GitHub webhook events will appear here in
-              real-time once the backend is connected.
+              No activity recorded yet. New GitHub webhook events will appear
+              here in real-time once the webhook is connected.
             </p>
           </div>
         ) : (

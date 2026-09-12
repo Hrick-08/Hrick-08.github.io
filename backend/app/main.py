@@ -26,11 +26,12 @@ app = FastAPI(title="Hrick Portfolio API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+print("CORS origins:", settings.cors_origins_list)
 
 app.include_router(webhooks_router)
 app.include_router(activity_router)
