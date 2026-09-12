@@ -194,7 +194,7 @@ export function LiveActivity() {
           <div>
             <AnimatePresence mode="popLayout">
               {activities.map((event) => (
-                <ActivityItem key={`${event.sha}-${event.timestamp}`} event={event} />
+                <ActivityItem key={`${event.commit_sha}-${event.timestamp}`} event={event} />
               ))}
             </AnimatePresence>
           </div>
