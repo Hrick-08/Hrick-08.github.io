@@ -5,7 +5,7 @@ export const siteConfig = {
   description:
     "A personal portfolio showcasing Hrick's software projects, experiments, and work across web development, AI, backend systems and infrastructure.",
   url: "https://hrick.in",
-  apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
+  apiUrl: (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/+$/, ""),
   links: {
     github: "https://github.com/Hrick-08",
     linkedin: "https://linkedin.com/in/hritabrata-das",
