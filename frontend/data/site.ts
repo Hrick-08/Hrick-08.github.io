@@ -27,7 +27,7 @@ export const experience = [
   {
     role: "Web Developer",
     organization: "Google Developer Groups On Campus — Chitkara University",
-    period: "Aug 2024 – Present",
+    period: "Sep 2025 – Present",
     description:
       "Building web platforms for community events, supporting 150+ student developers, and mentoring junior members. Increased participation in Google tech programs by 40%. Placed 3rd among 20+ teams in the Agentic Sprint Hackathon.",
   },
