@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { SectionHeader } from "@/components/ui/section-header";
 import { AnimatedSection } from "@/components/ui/animated-section";
 import { projects, type Project } from "@/data/projects";
@@ -16,7 +17,8 @@ function ProjectEntry({
 
   return (
     <AnimatedSection delay={index * 0.1}>
-      <article className="group grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 py-10 md:py-14 border-t border-border">
+      <div>
+        <article className="group grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 py-10 md:py-14 border-t border-border">
         {/* Number + Title */}
         <div className="md:col-span-5">
           <div className="flex items-baseline gap-3 mb-3">
@@ -108,7 +110,50 @@ function ProjectEntry({
         </div>
 
 
-      </article>
+        </article>
+
+        {project.slug === "exposr" && (
+          <section
+            className="ml-4 border-l-2 border-accent pb-10 pl-5 md:ml-8 md:pb-14 md:pl-8"
+            aria-labelledby="exposr-walkthrough"
+          >
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 py-5">
+              <h4
+                id="exposr-walkthrough"
+                className="font-editorial text-2xl md:text-3xl italic"
+              >
+                Exposr project walkthrough
+              </h4>
+              <span className="font-technical text-[10px] uppercase tracking-[0.16em] text-muted">
+                Exposr in action
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+              {[
+                { src: "/exposr/hosting.gif", label: "Hosting" },
+                { src: "/exposr/joining.gif", label: "Joining" },
+              ].map((gif) => (
+                <figure key={gif.src} className="m-0">
+                  <div className="overflow-hidden border border-border bg-surface">
+                    <Image
+                      src={gif.src}
+                      alt={`Exposr ${gif.label.toLowerCase()} workflow`}
+                      width={1920}
+                      height={1080}
+                      unoptimized
+                      className="block h-auto w-full"
+                    />
+                  </div>
+                  <figcaption className="font-technical mt-3 text-xs text-muted">
+                    {gif.label}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </AnimatedSection>
   );
 }
